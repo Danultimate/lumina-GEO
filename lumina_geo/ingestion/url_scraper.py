@@ -13,7 +13,10 @@ def scrape_url(url: str) -> str:
     app = Firecrawl(api_key=settings.firecrawl_api_key)
     result = app.scrape(url, formats=["markdown"])
 
-    content = result.get("markdown", "").strip() if isinstance(result, dict) else ""
+    if isinstance(result, dict):
+        content = result.get("markdown", "").strip()
+    else:
+        content = (getattr(result, "markdown", None) or "").strip()
 
     if not content:
         raise IngestionError(
