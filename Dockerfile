@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy source
 COPY lumina_geo/ lumina_geo/
 COPY api/ api/
+COPY static/ static/
 COPY cli.py .
 
 # Reports are written here — mount a volume to persist them
