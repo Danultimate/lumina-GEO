@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "lumina-geo"
+version = "0.1.0"
+description = "Audit websites and code repositories for AI-Readability and Generative Engine Optimization (GEO)"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.29.0",
+    "typer>=0.12.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.3.0",
+    "google-generativeai>=0.7.0",
+    "firecrawl-py>=0.0.16",
+    "langchain>=0.2.0",
+    "langchain-community>=0.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.27.0",
+]
+
+[project.scripts]
+lumina-geo = "cli:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lumina_geo*", "api*"]
