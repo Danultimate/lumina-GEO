@@ -295,24 +295,6 @@
       .score-banner { flex-direction: column; gap: 20px; text-align: center; }
     }
 
-    @media print {
-      *, *::before, *::after {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      body { background: #0f1117 !important; }
-
-      header, .input-card, .spinner, .error-box, .pdf-bar {
-        display: none !important;
-      }
-
-      main { margin: 0 !important; padding: 16px !important; max-width: 100% !important; }
-
-      #report { display: block !important; margin-top: 0 !important; }
-
-      .score-banner, .lenses, .lens-card, .detail-card { break-inside: avoid; page-break-inside: avoid; }
-    }
   </style>
 </head>
 <body>
@@ -401,7 +383,7 @@
     const date   = new Date(d.generated_at).toLocaleString();
 
     report.innerHTML = `
-      <div class="pdf-bar">
+      <div class="pdf-bar" id="pdf-bar">
         <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()">
           &#8595; Download PDF
         </button>
@@ -480,9 +462,45 @@
     report.style.display = "block";
   }
 
-  function downloadPdf() {
-    window.print();
+  async function downloadPdf() {
+    const btn    = document.getElementById("pdf-btn");
+    const report = document.getElementById("report");
+    const target = document.getElementById("target").value.trim();
+
+    btn.disabled    = true;
+    btn.textContent = "Generating…";
+
+    const hostname = target.replace(/https?:\/\//,"").replace(/[^a-z0-9]/gi,"-").replace(/-+$/,"");
+
+    const opt = {
+      margin:      [8, 8, 8, 8],
+      filename:    `lumina-geo-${hostname}.pdf`,
+      image:       { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        backgroundColor: "#0f1117",
+        useCORS: true,
+        logging: false,
+        onclone: (doc) => {
+          doc.body.style.background      = "#0f1117";
+          doc.body.style.fontFamily      = "Arial, Helvetica, sans-serif";
+          doc.getElementById("pdf-bar").style.display = "none";
+          doc.querySelectorAll("*").forEach(el => {
+            el.style.letterSpacing = "normal";
+            el.style.wordSpacing   = "normal";
+          });
+        }
+      },
+      jsPDF:     { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: { mode: ["avoid-all", "css"] }
+    };
+
+    await html2pdf().set(opt).from(report).save();
+
+    btn.disabled   = false;
+    btn.innerHTML  = "&#8595; Download PDF";
   }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
