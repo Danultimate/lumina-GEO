@@ -1,6 +1,6 @@
 import sys
 
-from firecrawl import FirecrawlApp
+from firecrawl import Firecrawl
 
 from lumina_geo.config import settings
 
@@ -10,8 +10,8 @@ class IngestionError(Exception):
 
 
 def scrape_url(url: str) -> str:
-    app = FirecrawlApp(api_key=settings.firecrawl_api_key)
-    result = app.scrape_url(url, params={"formats": ["markdown"]})
+    app = Firecrawl(api_key=settings.firecrawl_api_key)
+    result = app.scrape(url, formats=["markdown"])
 
     content = result.get("markdown", "").strip() if isinstance(result, dict) else ""
 
