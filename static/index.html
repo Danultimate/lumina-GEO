@@ -294,6 +294,25 @@
       .lenses { grid-template-columns: 1fr; }
       .score-banner { flex-direction: column; gap: 20px; text-align: center; }
     }
+
+    @media print {
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body { background: #0f1117 !important; }
+
+      header, .input-card, .spinner, .error-box, .pdf-bar {
+        display: none !important;
+      }
+
+      main { margin: 0 !important; padding: 16px !important; max-width: 100% !important; }
+
+      #report { display: block !important; margin-top: 0 !important; }
+
+      .score-banner, .lenses, .lens-card, .detail-card { break-inside: avoid; page-break-inside: avoid; }
+    }
   </style>
 </head>
 <body>
@@ -383,12 +402,11 @@
 
     report.innerHTML = `
       <div class="pdf-bar">
-        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf('${esc(d.url_or_path)}')">
+        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()">
           &#8595; Download PDF
         </button>
       </div>
 
-      <div id="pdf-content">
       <div class="score-banner">
         <div>
           <div class="target">${esc(d.url_or_path)}</div>
@@ -457,37 +475,14 @@
         <div class="section-label">Missing Definitions</div>
         ${listItems(d.answer_first.missing_definitions, "gaps")}
       </div>
-      </div>
     `;
 
     report.style.display = "block";
   }
 
-  async function downloadPdf(target) {
-    const btn     = document.getElementById("pdf-btn");
-    const content = document.getElementById("pdf-content");
-
-    btn.disabled    = true;
-    btn.textContent = "Generating…";
-
-    const hostname = target.replace(/https?:\/\//, "").replace(/[^a-z0-9]/gi, "-").replace(/-+$/, "");
-    const filename = `lumina-geo-${hostname}.pdf`;
-
-    const opt = {
-      margin:      [10, 10, 10, 10],
-      filename,
-      image:       { type: "jpeg", quality: 0.97 },
-      html2canvas: { scale: 2, backgroundColor: "#0f1117", useCORS: true, logging: false },
-      jsPDF:       { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak:   { mode: ["avoid-all", "css"] }
-    };
-
-    await html2pdf().set(opt).from(content).save();
-
-    btn.disabled    = false;
-    btn.innerHTML   = "&#8595; Download PDF";
+  function downloadPdf() {
+    window.print();
   }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
