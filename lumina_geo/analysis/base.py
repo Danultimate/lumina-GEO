@@ -7,7 +7,8 @@ from lumina_geo.reporting.models import LensResult
 SYSTEM_PROMPT = (
     "Act as a Search Engine LLM Crawler analyzing content for GEO "
     "(Generative Engine Optimization) readiness. "
-    "You MUST respond with valid JSON only — no markdown fences, no commentary."
+    "You MUST respond with valid JSON only — no markdown fences, no commentary. "
+    "When listing critical_fixes, order them by citation impact — highest impact first."
 )
 
 

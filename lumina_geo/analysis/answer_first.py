@@ -4,12 +4,18 @@ from lumina_geo.analysis.base import BaseLens
 from lumina_geo.reporting.models import AnswerFirstResult
 
 _INSTRUCTIONS = """
-Analyze the content for the ANSWER-FIRST LENS:
+Analyze the content for the ANSWER-FIRST LENS.
 
-1. Identify all question-based headings (headings that end with "?" or are phrased as questions).
-2. For each, check if a concise 40–60 word definition or direct answer immediately follows it.
-3. List headers that are missing this direct answer as "missing_definitions".
-4. Score from 1–10 (10 = every question header has a direct answer below it).
+AI systems extract passages, not pages. Every section should open with a self-contained statement.
+
+1. Identify ALL H2 and H3 headings (not just question headings).
+2. For each heading, check if a concise 40–60 word self-contained answer or definition
+   immediately follows it — one that makes sense without surrounding context.
+3. Give special weight to question-based headings (ending in "?" or phrased as questions)
+   — these must have a direct answer immediately following.
+4. List ALL headings that lack a direct self-contained answer as "missing_definitions".
+5. Score from 1–10 (10 = every heading opens with a standalone 40–60 word answer block).
+6. List critical_fixes ordered by citation impact — highest impact first.
 
 Respond ONLY with this JSON structure:
 {
