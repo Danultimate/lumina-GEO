@@ -276,7 +276,7 @@
         <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()">&#8595; Download PDF</button>
       </div>
 
-      <div class="score-banner">
+      <div id="pdf-content"><div class="score-banner">
         <div>
           <div class="target">${esc(d.url_or_path)}</div>
           <div class="meta">Audited on ${date}</div>
@@ -360,15 +360,16 @@
         <div class="section-label">Findings</div>${listItems(d.authority.findings)}
         <div class="section-label">Critical Fixes (by impact)</div>${listItems(d.authority.critical_fixes, "fixes")}
       </div>
+      </div>
     `;
 
     report.style.display = "block";
   }
 
   async function downloadPdf() {
-    const btn    = document.getElementById("pdf-btn");
-    const report = document.getElementById("report");
-    const target = document.getElementById("target").value.trim();
+    const btn     = document.getElementById("pdf-btn");
+    const content = document.getElementById("pdf-content");
+    const target  = document.getElementById("target").value.trim();
 
     btn.disabled = true; btn.textContent = "Generating…";
 
@@ -381,7 +382,6 @@
       html2canvas: {
         scale: 2, backgroundColor: "#ffffff", useCORS: true, logging: false,
         onclone: (doc) => {
-          doc.getElementById("pdf-bar").style.display = "none";
           doc.querySelectorAll("*").forEach(el => {
             el.style.letterSpacing = "normal";
             el.style.wordSpacing   = "normal";
@@ -389,7 +389,7 @@
           const s = doc.createElement("style");
           s.textContent = `
             * { font-family: Arial, Helvetica, sans-serif !important; }
-            body, main { background: #ffffff !important; }
+            body, main, #pdf-content { background: #ffffff !important; }
             .score-banner { background: #eef2ff !important; border-color: #c7d2fe !important; }
             .score-banner .target { color: #0f172a !important; }
             .score-banner .meta, .score-circle .label { color: #64748b !important; }
@@ -407,15 +407,18 @@
             .ai-access-banner.ok { background: #f0fdf4 !important; border-color: #86efac !important; color: #166534 !important; }
             .ai-access-banner.critical { background: #fff1f2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
             .empty { color: #94a3b8 !important; }
+            .score-banner, .platform-scores, .lenses, .ai-access-banner { break-inside: avoid; page-break-inside: avoid; }
+            .detail-card h2 { break-after: avoid; page-break-after: avoid; }
+            .detail-card { break-before: auto; page-break-before: auto; }
           `;
           doc.head.appendChild(s);
         }
       },
       jsPDF:     { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["avoid-all", "css"] }
+      pagebreak: { mode: ["css", "legacy"] }
     };
 
-    await html2pdf().set(opt).from(report).save();
+    await html2pdf().set(opt).from(content).save();
     btn.disabled = false; btn.innerHTML = "&#8595; Download PDF";
   }
 </script>
