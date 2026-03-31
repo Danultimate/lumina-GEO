@@ -191,6 +191,9 @@
 
   <div class="spinner" id="spinner"></div>
   <div class="error-box" id="error-box"></div>
+  <div class="pdf-bar" id="pdf-bar" style="display:none">
+    <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()">&#8595; Download PDF</button>
+  </div>
   <div id="report"></div>
 </main>
 
@@ -207,6 +210,7 @@
     btn.disabled = true; btn.textContent = "Running…";
     spinner.style.display = "block";
     errBox.style.display = "none";
+    document.getElementById("pdf-bar").style.display = "none";
     report.style.display = "none"; report.innerHTML = "";
 
     try {
@@ -272,10 +276,6 @@
       : "";
 
     report.innerHTML = `
-      <div class="pdf-bar" id="pdf-bar">
-        <button class="pdf-btn" id="pdf-btn" onclick="downloadPdf()">&#8595; Download PDF</button>
-      </div>
-
       <div id="pdf-content"><div class="score-banner">
         <div>
           <div class="target">${esc(d.url_or_path)}</div>
@@ -364,6 +364,7 @@
     `;
 
     report.style.display = "block";
+    document.getElementById("pdf-bar").style.display = "flex";
   }
 
   async function downloadPdf() {
@@ -415,7 +416,7 @@
         }
       },
       jsPDF:     { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] }
+      pagebreak: { mode: ["avoid-all", "css"] }
     };
 
     await html2pdf().set(opt).from(content).save();
