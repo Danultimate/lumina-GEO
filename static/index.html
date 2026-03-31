@@ -478,17 +478,37 @@
       image:       { type: "jpeg", quality: 0.98 },
       html2canvas: {
         scale: 2,
-        backgroundColor: "#0f1117",
+        backgroundColor: "#ffffff",
         useCORS: true,
         logging: false,
         onclone: (doc) => {
-          doc.body.style.background      = "#0f1117";
-          doc.body.style.fontFamily      = "Arial, Helvetica, sans-serif";
           doc.getElementById("pdf-bar").style.display = "none";
           doc.querySelectorAll("*").forEach(el => {
             el.style.letterSpacing = "normal";
             el.style.wordSpacing   = "normal";
           });
+          const s = doc.createElement("style");
+          s.textContent = `
+            * { font-family: Arial, Helvetica, sans-serif !important; }
+            body, main { background: #ffffff !important; }
+            .score-banner { background: #eef2ff !important; border-color: #c7d2fe !important; }
+            .score-banner .target { color: #0f172a !important; }
+            .score-banner .meta { color: #64748b !important; }
+            .score-circle .label { color: #64748b !important; }
+            .lens-card, .detail-card { background: #f8fafc !important; border-color: #e2e8f0 !important; }
+            .lens-card h3 { color: #475569 !important; }
+            .detail-card h2 { color: #0f172a !important; border-color: #e2e8f0 !important; }
+            .badge { background: #dbeafe !important; color: #1d4ed8 !important; border-color: #93c5fd !important; }
+            .section-label { color: #94a3b8 !important; }
+            ul.items li { color: #1e293b !important; border-color: #e2e8f0 !important; }
+            ul.items li::before { color: #3b82f6 !important; }
+            ul.items.fixes li::before { color: #ef4444 !important; }
+            ul.items.gaps li::before { color: #f59e0b !important; }
+            .pill-green { background: #dcfce7 !important; color: #166534 !important; border-color: #86efac !important; }
+            .pill-red { background: #fee2e2 !important; color: #991b1b !important; border-color: #fca5a5 !important; }
+            .empty { color: #94a3b8 !important; }
+          `;
+          doc.head.appendChild(s);
         }
       },
       jsPDF:     { unit: "mm", format: "a4", orientation: "portrait" },
