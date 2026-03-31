@@ -22,6 +22,8 @@ def audit(request: AuditRequest) -> AuditReport:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     write_report(report, request.output_dir)
     return report
